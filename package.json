@@ -3,16 +3,18 @@
   "version": "3.0.1",
   "description": "NodeJS implementation of RFC 2397, both parsing and composing",
   "main": "src/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "c8 mocha",
-    "test-ci": "c8 --reporter=lcovonly mocha"
+    "test-ci": "c8 --reporter=lcovonly mocha",
+    "prepack": "npm test && tsc"
   },
   "engines": {
     "node": ">= 16"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sebastian-onlea/node-rfc2397"
+    "url": "git+https://github.com/sebastian-onlea/node-rfc2397.git"
   },
   "bugs": {
     "url": "https://github.com/sebastian-onlea/node-rfc2397/issues"
@@ -26,9 +28,11 @@
   "author": "Robin Hahling <robin.hahling@gw-computing.net>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.12.7",
     "c8": "^9.1.0",
     "chai": "^5.1.0",
-    "mocha": "^10.4.0"
+    "mocha": "^10.4.0",
+    "typescript": "^5.4.5"
   },
   "type": "module",
   "contributors": [
