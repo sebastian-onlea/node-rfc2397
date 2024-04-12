@@ -4,19 +4,19 @@
 /* global context:true */
 /* global it:true */
 
-var util = require("util");
+import util from "util";
 
-var chai   = require("chai");
-var expect = chai.expect;
+import { expect as _expect } from "chai";
+var expect = _expect;
 
-var moddataurl = require('../');
+import { parseSync, parse, composeSync, compose } from '../index.js';
 
 
 describe("node-rfc2397", function () {
     describe("parseSync", function () {
         context("when given a dataurl without data", function () {
             it("should parse it successfully", function () {
-                expect(moddataurl.parseSync("data:text/plain,")).to.deep.equal({
+                expect(parseSync("data:text/plain,")).to.deep.equal({
                     mime: "text/plain",
                     parameters: {},
                     data: Buffer.from([])
@@ -25,7 +25,7 @@ describe("node-rfc2397", function () {
         });
         context("when given RFC 2397 examples", function () {
             it("should parse the 'brief note' example successfully", function () {
-                expect(moddataurl.parseSync("data:,A%20brief%20note")).to.deep.equal({
+                expect(parseSync("data:,A%20brief%20note")).to.deep.equal({
                     mime: "text/plain",
                     parameters: {
                         charset: "US-ASCII",
@@ -38,7 +38,7 @@ describe("node-rfc2397", function () {
                 // '%be%d3%be' as proposed in errata (ID: 2009) since 'g' is
                 // obviously not a hex digit
                 // see https://www.rfc-editor.org/errata_search.php?eid=2009
-                expect(moddataurl.parseSync("data:text/plain;charset=iso-8859-7,%be%d3%be")).to.deep.equal({
+                expect(parseSync("data:text/plain;charset=iso-8859-7,%be%d3%be")).to.deep.equal({
                     mime: "text/plain",
                     parameters: {
                         charset: "iso-8859-7",
@@ -55,7 +55,7 @@ describe("node-rfc2397", function () {
                     "0Q4XUtwvKOzrcd3iq9uisF81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQ" +
                     "Fo97Vriy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7";
                 var larry = "data:image/gif;base64," + data;
-                expect(moddataurl.parseSync(larry)).to.deep.equal({
+                expect(parseSync(larry)).to.deep.equal({
                     mime: 'image/gif',
                     parameters: {},
                     base64: true,
@@ -67,7 +67,7 @@ describe("node-rfc2397", function () {
                 // has been changed because it is not correctly percent encoded
                 var data = "select_vcount%2cfcol_from_fieldtable%2flocal";
                 var vnd = "data:application/vnd-xxx-query," + data;
-                expect(moddataurl.parseSync(vnd)).to.deep.equal({
+                expect(parseSync(vnd)).to.deep.equal({
                     mime: 'application/vnd-xxx-query',
                     parameters: {},
                     data: Buffer.from("select_vcount,fcol_from_fieldtable/local", "ascii"),
@@ -77,7 +77,7 @@ describe("node-rfc2397", function () {
         describe("type/subtype and charset", function () {
             context("when given a minimal dataurl without charset and without type/subtype", function () {
                 it("should parse it successfully and default to text/plain;charset=US-ASCII", function () {
-                    expect(moddataurl.parseSync("data:,")).to.deep.equal({
+                    expect(parseSync("data:,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             charset: "US-ASCII",
@@ -88,7 +88,7 @@ describe("node-rfc2397", function () {
             });
             context("when given a dataurl with charset but no type/subtype", function () {
                 it("should parse it successfully and default to text/plain", function () {
-                    expect(moddataurl.parseSync("data:;charset=utf-8,")).to.deep.equal({
+                    expect(parseSync("data:;charset=utf-8,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             charset: "utf-8",
@@ -99,7 +99,7 @@ describe("node-rfc2397", function () {
             });
             context("when given a dataurl with type/subtype and charset specified", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;charset=ISO-8859-1,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;charset=ISO-8859-1,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             charset: "ISO-8859-1",
@@ -112,7 +112,7 @@ describe("node-rfc2397", function () {
         describe("parameters", function () {
             context("when given a dataurl with several parameters", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;charset=cp866;foo=bar;answer=42,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;charset=cp866;foo=bar;answer=42,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             charset: "cp866",
@@ -125,7 +125,7 @@ describe("node-rfc2397", function () {
             });
             context("when given an URL encoded key parameter", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;A%20brief%20note=hello,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;A%20brief%20note=hello,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             "A brief note": "hello"
@@ -136,7 +136,7 @@ describe("node-rfc2397", function () {
             });
             context("when given 'base64' as key parameter", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;base64=foo,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;base64=foo,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             base64: "foo",
@@ -147,7 +147,7 @@ describe("node-rfc2397", function () {
             });
             context("when given duplicate parameter keys", function () {
                 it("should throw a duplicate parameter keys error", function () {
-                    expect(moddataurl.parseSync("data:text/plain;foo=bar;foo=nope,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;foo=bar;foo=nope,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             foo: "bar",
@@ -158,7 +158,7 @@ describe("node-rfc2397", function () {
             });
             context("when given an URL encoded value parameter", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;hello=A%20brief%20note,")).to.deep.equal({
+                    expect(parseSync("data:text/plain;hello=A%20brief%20note,")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {
                             hello: "A brief note",
@@ -171,7 +171,7 @@ describe("node-rfc2397", function () {
         describe("base64 encoding", function () {
             context("when given a dataurl with base64 encoded text with type/subtype specified", function () {
                 it("should parse it successfully", function () {
-                    expect(moddataurl.parseSync("data:text/plain;base64,SGVsbG8gV29ybGQ=")).to.deep.equal({
+                    expect(parseSync("data:text/plain;base64,SGVsbG8gV29ybGQ=")).to.deep.equal({
                         mime: "text/plain",
                         parameters: {},
                         base64: true,
@@ -182,7 +182,7 @@ describe("node-rfc2397", function () {
             context("when given a minimal dataurl with a base64 encoded image", function () {
                 it("should parse it successfully", function () {
                     var data = "R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
-                    expect(moddataurl.parseSync("data:image/gif;base64," + data)).to.deep.equal({
+                    expect(parseSync("data:image/gif;base64," + data)).to.deep.equal({
                         mime: "image/gif",
                         parameters: {},
                         base64: true,
@@ -195,28 +195,28 @@ describe("node-rfc2397", function () {
             context("when the dataurl is malformed", function () {
                 it("should yield a 'malformed dataurl' error", function () {
                     expect(function () {
-                        moddataurl.parseSync("I am NOT a dataurl");
+                        parseSync("I am NOT a dataurl");
                     }).to.throw(Error, "malformed dataurl");
                 });
             });
             context("when the dataurl has an invalid parameter", function () {
                 it("should yield a 'invalid dataurl parameter' error", function () {
                     expect(function () {
-                        moddataurl.parseSync("data:;this=is=invalid,A%20brief%20note");
+                        parseSync("data:;this=is=invalid,A%20brief%20note");
                     }).to.throw(Error, "invalid dataurl parameter");
                 });
             });
             context("when the data is badly URL encoded", function () {
                 it("should yield a 'malformed data' error", function () {
                     expect(function () {
-                        moddataurl.parseSync("data:,%fgabc");
+                        parseSync("data:,%fgabc");
                     }).to.throw(Error, "malformed data");
                 });
             });
             context("when the data is badly base64 encoded", function () {
                 it("should yield a 'malformed data' error", function () {
                     expect(function () {
-                        moddataurl.parseSync("data:;base64,bad-base64-data");
+                        parseSync("data:;base64,bad-base64-data");
                     }).to.throw(Error, "malformed data");
                 });
             });
@@ -225,7 +225,7 @@ describe("node-rfc2397", function () {
     describe("parse", function () {
         context("when given a RFC2397 compliant dataurl", function () {
             it("should provide the resulting info object via the callback function", function (done) {
-                moddataurl.parse("data:text/plain,", function (err, info) {
+                parse("data:text/plain,", function (err, info) {
                     if (err)
                         return done(err);
                     expect(info).to.deep.equal({
@@ -239,7 +239,7 @@ describe("node-rfc2397", function () {
         });
         context("when given an invalid dataurl", function () {
             it("should callback an error", function (done) {
-                moddataurl.parse("Luke, I am your father!", function (err, info) {
+                parse("Luke, I am your father!", function (err, info) {
                     expect(err).to.be.an.instanceof(Error);
                     return done();
                 });
@@ -252,7 +252,7 @@ describe("node-rfc2397", function () {
                 var info = {
                     data: Buffer.from("A brief note", "ascii")
                 };
-                expect(moddataurl.composeSync(info)).to.equal("data:,A%20brief%20note");
+                expect(composeSync(info)).to.equal("data:,A%20brief%20note");
             });
             it("should compose the 'charset parameter' example successfully", function () {
                 var info =  {
@@ -262,7 +262,7 @@ describe("node-rfc2397", function () {
                     },
                     data: Buffer.from("bed3be", "hex"),
                 };
-                expect(moddataurl.composeSync(info)).to.equal("data:text/plain;charset=iso-8859-7,%be%d3%be");
+                expect(composeSync(info)).to.equal("data:text/plain;charset=iso-8859-7,%be%d3%be");
             });
             it("should compose the 'Larry' example successfully", function () {
                 var data = "R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8Iy" +
@@ -279,7 +279,7 @@ describe("node-rfc2397", function () {
                     base64: true,
                     data: Buffer.from(data, "base64"),
                 };
-                expect(moddataurl.composeSync(info)).to.equal(larry);
+                expect(composeSync(info)).to.equal(larry);
             });
             it("should compose the 'application/vnd-xxx-query' example successfully", function () {
                 var data = "select_vcount%2cfcol_from_fieldtable%2flocal";
@@ -289,7 +289,7 @@ describe("node-rfc2397", function () {
                     parameters: {},
                     data: Buffer.from("select_vcount,fcol_from_fieldtable/local", "ascii"),
                 };
-                expect(moddataurl.composeSync(info)).to.equal(vnd);
+                expect(composeSync(info)).to.equal(vnd);
             });
         });
         describe("type/subtype and charset", function () {
@@ -299,7 +299,7 @@ describe("node-rfc2397", function () {
                         mime: "text/plain",
                         data: Buffer.from([])
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:text/plain,");
+                    expect(composeSync(info)).to.equal("data:text/plain,");
                 });
             });
             context("when given an object with both type/subtype and charset specified", function () {
@@ -311,7 +311,7 @@ describe("node-rfc2397", function () {
                         },
                         data: Buffer.from([])
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:text/plain;charset=ISO-8859-1,");
+                    expect(composeSync(info)).to.equal("data:text/plain;charset=ISO-8859-1,");
                 });
             });
             context("when data is 0x0", function () {
@@ -319,7 +319,7 @@ describe("node-rfc2397", function () {
                     var info = {
                         data: Buffer.from([0x00]),
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:,%00");
+                    expect(composeSync(info)).to.equal("data:,%00");
                 });
             });
         });
@@ -337,7 +337,7 @@ describe("node-rfc2397", function () {
                     };
                     // FIXME: we could fail this test because the order is
                     // not guaranteed here.
-                    expect(moddataurl.composeSync(info)).to.equal("data:text/plain;charset=cp866;foo=bar;answer=42,%e1%ab%ae%a2%ae");
+                    expect(composeSync(info)).to.equal("data:text/plain;charset=cp866;foo=bar;answer=42,%e1%ab%ae%a2%ae");
                 });
             });
             context("when given an URL encoded key parameter", function () {
@@ -348,7 +348,7 @@ describe("node-rfc2397", function () {
                         },
                         data: Buffer.from([])
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:;A%20brief%20note=hello,");
+                    expect(composeSync(info)).to.equal("data:;A%20brief%20note=hello,");
                 });
             });
             context("when given an URL encoded value parameter", function () {
@@ -359,7 +359,7 @@ describe("node-rfc2397", function () {
                         },
                         data: Buffer.from([])
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:;hello=A%20brief%20note,");
+                    expect(composeSync(info)).to.equal("data:;hello=A%20brief%20note,");
                 });
             });
 
@@ -371,7 +371,7 @@ describe("node-rfc2397", function () {
                         base64: true,
                         data: Buffer.from("A brief note"),
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:;base64,QSBicmllZiBub3Rl");
+                    expect(composeSync(info)).to.equal("data:;base64,QSBicmllZiBub3Rl");
                 });
             });
             context("when given an object with a base64 encoded image", function () {
@@ -382,7 +382,7 @@ describe("node-rfc2397", function () {
                         base64: true,
                         data: Buffer.from(data, "base64"),
                     };
-                    expect(moddataurl.composeSync(info)).to.equal("data:image/gif;base64," + data);
+                    expect(composeSync(info)).to.equal("data:image/gif;base64," + data);
                 });
             });
         });
@@ -393,7 +393,7 @@ describe("node-rfc2397", function () {
                         data: new Date(),
                     };
                     expect(function () {
-                        moddataurl.composeSync(info);
+                        composeSync(info);
                     }).to.throw(Error, "expected info.data to be a Buffer");
                 });
             });
@@ -407,7 +407,7 @@ describe("node-rfc2397", function () {
                     parameters: {},
                     data: Buffer.from([])
                 };
-                moddataurl.compose(info, function (err, dataurl) {
+                compose(info, function (err, dataurl) {
                     if (err)
                         return done(err);
                     expect(dataurl).to.equal("data:text/plain,");
@@ -420,7 +420,7 @@ describe("node-rfc2397", function () {
                 var info = {
                     data: new Date(),
                 };
-                moddataurl.compose(info, function (err, dataurl) {
+                compose(info, function (err, dataurl) {
                     expect(err).to.be.an.instanceof(Error);
                     return done();
                 });

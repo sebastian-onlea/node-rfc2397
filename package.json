@@ -30,6 +30,7 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.4.2"
   },
+  "type": "module",
   "contributors": [
     "Alexandre Perrin <alexandre.perrin@netoxygen.ch> (https://github.com/kAworu)",
     "Robin Hahling <robin.hahling@gw-computing.net> (https://github.com/Rolinh)"

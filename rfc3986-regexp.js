@@ -5,13 +5,6 @@
  */
 "use strict";
 
-/*
- * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
- */
-module.exports.unreserved = /[A-Za-z0-9\-\._~]/;
+export const unreserved = /[A-Za-z0-9\-\._~]/;
 
-/*
- *  escaped     = pct-encoded
- *  pct-encoded = "%" HEXDIG HEXDIG
- */
-module.exports.escaped = /%[A-Fa-f0-9]{2}/;
+export const escaped = /%[A-Fa-f0-9]{2}/;
