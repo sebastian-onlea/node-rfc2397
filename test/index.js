@@ -6,7 +6,11 @@
 
 import util from "util";
 
-import { expect as _expect } from "chai";
+import chai, { expect as _expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+chai.use(chaiAsPromised);
+
 var expect = _expect;
 
 import { parseSync, parse, composeSync, compose } from '../src/index.js';
@@ -224,25 +228,17 @@ describe("node-rfc2397", function () {
     });
     describe("parse", function () {
         context("when given a RFC2397 compliant dataurl", function () {
-            it("should provide the resulting info object via the callback function", function (done) {
-                parse("data:text/plain,", function (err, info) {
-                    if (err)
-                        return done(err);
-                    expect(info).to.deep.equal({
-                        mime: "text/plain",
-                        parameters: {},
-                        data: Buffer.from([])
-                    });
-                    return done();
+            it("should provide the resulting info object in a Promise", function () {
+                return expect(parse("data:text/plain,")).to.eventually.deep.equal({
+                    mime: "text/plain",
+                    parameters: {},
+                    data: Buffer.from([])
                 });
             });
         });
         context("when given an invalid dataurl", function () {
-            it("should callback an error", function (done) {
-                parse("Luke, I am your father!", function (err, info) {
-                    expect(err).to.be.an.instanceof(Error);
-                    return done();
-                });
+            it("should reject with an Error", function () {
+                return expect(parse("Luke, I am your father!")).to.be.rejectedWith(Error);
             });
         });
     });
@@ -401,29 +397,21 @@ describe("node-rfc2397", function () {
     });
     describe("compose", function () {
         context("when given a valid object", function () {
-            it("should provide the resulting dataurl via the callback function", function (done) {
+            it("should provide the resulting dataurl in a Promise", function () {
                 var info = {
                     mime: "text/plain",
                     parameters: {},
                     data: Buffer.from([])
                 };
-                compose(info, function (err, dataurl) {
-                    if (err)
-                        return done(err);
-                    expect(dataurl).to.equal("data:text/plain,");
-                    return done();
-                });
+                return expect(compose(info)).to.eventually.equal("data:text/plain,");
             });
         });
         context("when given an object with invalid data", function () {
-            it("should callback an error", function (done) {
+            it("should reject with an Error", function () {
                 var info = {
                     data: new Date(),
                 };
-                compose(info, function (err, dataurl) {
-                    expect(err).to.be.an.instanceof(Error);
-                    return done();
-                });
+                return expect(compose(info)).to.be.rejectedWith(Error);
             });
         });
     });

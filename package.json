@@ -30,7 +30,8 @@
   "devDependencies": {
     "@types/node": "^20.12.7",
     "c8": "^9.1.0",
-    "chai": "^5.1.0",
+    "chai": "^4.4.1",
+    "chai-as-promised": "^7.1.1",
     "mocha": "^10.4.0",
     "typescript": "^5.4.5"
   },
