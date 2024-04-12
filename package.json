@@ -1,6 +1,6 @@
 {
   "name": "@onlea/node-rfc2397",
-  "version": "4.0.0-1",
+  "version": "4.0.0-2",
   "description": "NodeJS implementation of RFC 2397, both parsing and composing",
   "main": "src/index.js",
   "types": "types/index.d.ts",
