@@ -2,9 +2,14 @@
 
 import { unreserved, escaped } from "./rfc3986-regexp.js";
 
+/** 
+ * @typedef {{ base64: boolean; mime: string | undefined; parameters: Record<string,string>; data: any; }} Info 
+ */
 
-/*
+/**
  * validate and decode "%xx hex" encoded strings into a Buffer.
+ * @param {string} urlencoded
+ * @returns {Buffer}
  */
 function pct_decode(urlencoded) {
     var correctly_encoded = new RegExp(
@@ -27,8 +32,10 @@ function pct_decode(urlencoded) {
 }
 
 
-/*
+/**
  * Encode argument into a percent encoded string.
+ * @param {string | Buffer} arg 
+ * @returns {string}
  */
 function pct_encode(arg) {
     // convert arg to an array of bytes and escape every one of them that is
@@ -50,8 +57,10 @@ function pct_encode(arg) {
 }
 
 
-/*
+/**
  * validate and decode a base64 encoded string into a buffer.
+ * @param {string} base64encoded 
+ * @returns {Buffer}
  */
 function base64_decode(base64encoded) {
     // we validate "by hand" the base64encoded data, because Buffer.from will
@@ -73,12 +82,20 @@ function base64_decode(base64encoded) {
 /*
  * Encode argument into a base64 encoded string.
  */
+/**
+ * @param {string | Buffer} arg 
+ * @returns {string}
+ */
 function base64_encode(arg) {
     var buff = Buffer.from(arg);
     return buff.toString("base64");
 }
 
 
+/**
+ * @param {string} dataurl 
+ * @returns {Info}
+ */
 export function parseSync(dataurl) {
     // capture groups:
     //   (1) [ mediatype ] [ ";base64" ]
@@ -134,6 +151,11 @@ export function parseSync(dataurl) {
 
     return info;
 }
+/**
+ * @param {string} dataurl
+ * @param {(err: null | unknown, parsed?: Info)=>void} callback
+ * @returns {void}
+ */
 export function parse(dataurl, callback) {
     try {
         return callback(null, parseSync(dataurl));
@@ -141,6 +163,10 @@ export function parse(dataurl, callback) {
         return callback(err);
     };
 }
+/**
+ * @param {Info} info 
+ * @returns {string}
+ */
 export function composeSync(info) {
     if (!Buffer.isBuffer(info.data))
         throw new TypeError("expected info.data to be a Buffer");
@@ -171,6 +197,11 @@ export function composeSync(info) {
 
     return "data:" + mediatype.join(";") + base64 + "," + data;
 }
+/**
+ * @param {Info} info 
+ * @param {(err: null | unknown, composed?: string)=>void} callback 
+ * @returns {void}
+ */
 export function compose(info, callback) {
     try {
         return callback(null, composeSync(info));
