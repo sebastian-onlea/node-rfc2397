@@ -9,7 +9,7 @@ import util from "util";
 import { expect as _expect } from "chai";
 var expect = _expect;
 
-import { parseSync, parse, composeSync, compose } from '../index.js';
+import { parseSync, parse, composeSync, compose } from '../src/index.js';
 
 
 describe("node-rfc2397", function () {
