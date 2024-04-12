@@ -151,18 +151,21 @@ export function parseSync(dataurl) {
 
     return info;
 }
+
 /**
- * @param {string} dataurl
- * @param {(err: null | unknown, parsed?: Info)=>void} callback
- * @returns {void}
+ * @param {string} dataurl 
+ * @returns {Promise<Info>}
  */
-export function parse(dataurl, callback) {
-    try {
-        return callback(null, parseSync(dataurl));
-    } catch (err) {
-        return callback(err);
-    };
+export function parse(dataurl) {
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(parseSync(dataurl));
+        } catch (err) {
+            reject(err);
+        };
+    });
 }
+
 /**
  * @param {Info} info 
  * @returns {string}
@@ -197,15 +200,17 @@ export function composeSync(info) {
 
     return "data:" + mediatype.join(";") + base64 + "," + data;
 }
+
 /**
  * @param {Info} info 
- * @param {(err: null | unknown, composed?: string)=>void} callback 
- * @returns {void}
+ * @returns {Promise<string>}
  */
-export function compose(info, callback) {
-    try {
-        return callback(null, composeSync(info));
-    } catch (err) {
-        return callback(err);
-    }
+export function compose(info) {
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(composeSync(info));
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
