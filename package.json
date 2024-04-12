@@ -1,5 +1,5 @@
 {
-  "name": "node-rfc2397",
+  "name": "@onlea/node-rfc2397",
   "version": "3.0.1",
   "description": "NodeJS implementation of RFC 2397, both parsing and composing",
   "main": "index.js",
@@ -12,10 +12,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/NetOxygen/node-rfc2397"
+    "url": "https://github.com/sebastian-onlea/node-rfc2397"
   },
   "bugs": {
-    "url": "https://github.com/NetOxygen/node-rfc2397/issues"
+    "url": "https://github.com/sebastian-onlea/node-rfc2397/issues"
   },
   "keywords": [
     "rfc 2397",
@@ -33,6 +33,7 @@
   "type": "module",
   "contributors": [
     "Alexandre Perrin <alexandre.perrin@netoxygen.ch> (https://github.com/kAworu)",
-    "Robin Hahling <robin.hahling@gw-computing.net> (https://github.com/Rolinh)"
+    "Robin Hahling <robin.hahling@gw-computing.net> (https://github.com/Rolinh)",
+    "Sebastian Hanlon <sebastian@onlea.org> (https://github.com/sebastian-onlea)"
   ]
 }
