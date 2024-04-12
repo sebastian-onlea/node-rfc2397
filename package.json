@@ -4,6 +4,7 @@
   "description": "NodeJS implementation of RFC 2397, both parsing and composing",
   "main": "src/index.js",
   "types": "types/index.d.ts",
+  "files": ["src/**/*","types/**/*"],
   "scripts": {
     "test": "c8 mocha",
     "test-ci": "c8 --reporter=lcovonly mocha",
