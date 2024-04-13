@@ -67,12 +67,10 @@ function base64_decode(base64encoded) {
     // "successfully" parse non-base64 data.
     //
     // regexp taken from
-    // https://stackoverflow.com/questions/475074/regex-to-parse-or-validate-base64-data/475217#475217
-    var correctly_encoded = new RegExp(
-        "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
-    );
+    // https://stackoverflow.com/a/76279466
+    var correctly_encoded = /^[A-Za-z0-9+\/]*=?=?$/;
 
-    if (!base64encoded.match(correctly_encoded))
+    if (base64encoded.length % 4 !== 0 || !base64encoded.match(correctly_encoded))
         throw new Error("malformed data");
 
     return Buffer.from(base64encoded, 'base64');

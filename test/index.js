@@ -5,6 +5,7 @@
 /* global it:true */
 
 import util from "util";
+import fs from "fs";
 
 import chai, { expect as _expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -194,6 +195,21 @@ describe("node-rfc2397", function () {
                     });
                 });
             });
+            context("when given a very large dataurl (>8900kB) with a base64 encoded image", function () {
+                this.slow(200);
+                it("should parse it successfully", function () {
+                    const dataurl = fs.readFileSync('test/very-large-png.url.txt', 'utf-8');
+                    const parsed = parseSync(dataurl);
+                    expect(parsed).to.deep.include({
+                        mime: "image/png",
+                        parameters: {},
+                        base64: true,
+                    });
+                    expect(parsed).to.have.property('data');
+                    expect(parsed['data']).to.be.a.string;
+                });
+            });
+    
         });
         context("when given an invalid dataurl", function () {
             context("when the dataurl is malformed", function () {
